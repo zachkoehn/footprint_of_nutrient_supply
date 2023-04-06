@@ -9,9 +9,9 @@ Input - USDA API key
 Output - "usda_api_extract.csv"
 
 *read_clean_data.R* - 
-This script reads and cleans, ensuring all food group categories follow the same naming structure. 
-Input - supplementary data file from Halpern et al (2022)
-Output - a series of object files pulled in by subsequent scripts.
+This script reads and cleans, ensuring all food group categories follow the same naming structure. </br>
+Input - supplementary data file from Halpern et al (2022)</br>
+Output - a series of object files pulled in by subsequent scripts.</br>
 
 *calculate cumulative pressure and nutrient production.R* _
 
