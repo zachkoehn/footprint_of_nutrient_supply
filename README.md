@@ -3,8 +3,11 @@ Script and data used here reproduce the results reported in "Nutrition should co
 
 ## Description of scripts 
 
-**usda_fdc_api.R** -
+**extract_terrestrial_nutrients_usda.R** -
 Runs API to download USDA nutrient data for livestock and crops. Note, any user will need to create their own API key and add to the script in order to run this file. 
+
+**extract_aquatic_nutrients_afcd.R** - 
+Downloads and cleans aquatic food nutrient data from the Aquatic Food Composition Database (AFCD). This file also looks at overlaps between the FAO food groups used in Halpern et al. and AFCD. 
 
 **read_clean_data.R** - 
 This script reads and cleans, ensuring all food group categories follow the same naming structure. Outputs from this file are used by subsequent scripts to create findings in text as well as figures from the main content and supplementary information. 

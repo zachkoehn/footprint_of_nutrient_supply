@@ -3,6 +3,8 @@ library(tidyverse)
 library(AFCD)
 library(viridis)
 
+
+# pull data from FAO production that was not listed in Halpern et al. 2022.
 original_fisheries <- read_csv(here("data","fisheries_spp_groups.csv")) %>%
   rename(paper_category=species_class_final)
 
@@ -14,7 +16,7 @@ original_land <- read_csv(here("data","food_categories_Nov_2022.csv")) %>%
 
 all_fao <- read_csv(here("data","fishstatj_all_production.csv"))
 
-
+# clean produciton data names
 aquatic_common <- str_to_lower(unique(original_mariculture$species))
 aquatic_scinames <- unique(original_fisheries$TaxonName)
 
@@ -81,6 +83,16 @@ fish_clean <- original_fisheries %>%
 aquatic_clean <- rbind(mari_clean,fish_clean,fresh_clean) %>%
   mutate(taxa_to_match=str_to_lower(taxa_to_match))
 
+# Extract production data product scientific names and extract nutrient values
+# from the Aquatic Food Composition Database
+
+# Run if you don't already have devtools installed, also installs AFCD
+# install.packages("devtools")
+# devtools::install_github("Aquatic-Food-Composition-Database/AFCD", force=T)
+library(AFCD)
+# Function from AFCD that extracts nutrient data hierarchically
+# ie if species-level data for a nutrient is missing, 
+# it goes up to one or the next taxonomic level
 aquatic_afcd <- species_nutrients(
   sci_name = aquatic_clean$taxa_to_match,
   nut= c(
@@ -139,43 +151,3 @@ afcd_all <- rbind(mariculture_afcd,fisheries_afcd,freshwater_afcd)  %>%
   
 
 write_csv(afcd_all,file=here("outputs","data","afcd_extract.csv"))
-
-
-
-afcd_all %>%
-  group_by(taxa_match,nutrient) %>%
-  count() %>%
-  pivot_wider(names_from=taxa_match,values_from = n) %>%
-  rename('no_match'='NA') %>%
-  select(nutrient,species,genus,family,order,class,no_match) %>%
-  mutate(
-    nutrient=str_replace_all(nutrient,"Fibre, total; gravimetrically determined","Fibre"),
-    nutrient=str_replace_all(nutrient,"Folate, total","Folate"),
-    nutrient=str_replace_all(nutrient,"Iron, total","Iron"),
-    nutrient=str_replace_all(nutrient,"Protein, total; calculated from total nitrogen","Protein"),
-    nutrient=str_replace_all(nutrient,"Vitamin A\\; sum of retinol/carotenoids, expressed as retinol activity equivalent \\(RAE\\)","Vit. A RAE")
-  ) %>%
-  mutate(
-    total=species+genus+family+class+order+no_match,
-    species=species/total,
-    genus=genus/total,
-    family=family/total,
-    class=class/total,
-    order=order/total,
-    no_match=no_match/total
-  ) %>%
-  select(-total) %>%
-  pivot_longer(species:no_match,names_to = 'taxa_match',values_to = 'perc') %>%
-  mutate(
-    taxa_match=ifelse(taxa_match=="no_match",NA,taxa_match),
-    taxa_match=factor(taxa_match,levels = c('species','genus','family','order','class',NA))
-  ) %>%
-  ggplot(aes(fill=taxa_match,x=perc,y=nutrient)) +
-  geom_bar(position="fill", stat="identity") +
-  scale_fill_viridis(
-    option="turbo",discrete=TRUE,name="Taxonomic\nmatch",na.value="gray50"
-  ) +
-  scale_x_continuous(labels = scales::percent)+
-  ylab("") + xlab("") +
-  theme_bw() +
-  ggtitle("Nutrients matched by taxonomic level in AFCD")
