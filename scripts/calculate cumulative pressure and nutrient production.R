@@ -86,7 +86,7 @@ select_bf_nutrient_props <- production_nutrients %>%
   distinct() %>%
   # View()
   filter(
-    paper_category %in% c("salmon","bivalve","crustaceans","tuna","small pelagic","forage fish","freshwater fish"),
+    paper_category %in% c("salmon","bivalve","crustaceans","small pelagic","forage fish","freshwater fish")
     # nutrient_name %in% c("DHA_EPA","Selenium","Vit. B12")
     ) %>%
   group_by(nutrient_name) %>%
@@ -125,9 +125,62 @@ perc_total_pressure %>%
   select(paper_category,percent_total_pressure)
 
 perc_total_pressure %>%
+  filter(
+    paper_category %in% c("salmon","bivalve","crustaceans","small pelagic","forage fish","freshwater fish")
+    ) %>%
+  select(paper_category,percent_total_pressure)
+
+
+
+perc_total_pressure %>%
   ggplot(aes(x=percent_total_pressure,y=fct_reorder(paper_category,percent_total_pressure))) +
   scale_x_continuous(labels = scales::percent) +
   ylab("") + xlab("% total pressure") +
   geom_bar(stat="identity") +
   facet_wrap(~food_sector,scales = "free")
 
+
+#######################################################
+# Calculations related to global nutrient production
+#______________________________________________________
+# proportion of aquaculture production that is prawns (by tonnage)
+country_pressure_data %>%
+  left_join(food_group_categories) %>%
+  filter(food_sector=="mariculture") %>%
+  group_by(paper_category,food_sector) %>%
+  summarize(
+    food_group_total=sum(tonnes)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    total_weight=sum(food_group_total),
+    perc_total=food_group_total/total_weight
+  ) 
+# proportion of capture production that is demersals (by tonnage)
+country_pressure_data %>%
+  left_join(food_group_categories) %>%
+  filter(food_sector=="marine and freshwater fisheries") %>%
+  group_by(paper_category,food_sector) %>%
+  summarize(
+    food_group_total=sum(tonnes)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    total_weight=sum(food_group_total),
+    perc_total=food_group_total/total_weight
+  ) 
+
+# proportion of all aquatic food production that is 
+# demersal and shrimp
+country_pressure_data %>%
+  left_join(food_group_categories) %>%
+  filter(food_system=="aquatic") %>%
+  group_by(paper_category,food_sector) %>%
+  summarize(
+    food_group_total=sum(tonnes)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    total_weight=sum(food_group_total),
+    perc_total=food_group_total/total_weight
+  ) 

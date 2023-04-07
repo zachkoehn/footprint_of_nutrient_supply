@@ -172,21 +172,21 @@ region_select_nutrients_plot <- region_production_nutrients %>%
       )
     ) +
   geom_vline(xintercept=0.1,color="black") +
-  xlab("proportion of total nutrient production in each region met by blue food sector") +
+  xlab("proportion of total nutrient production in each region by the aquatic food sector") +
   ylab("") +
   geom_bar(stat="identity") +
   scale_x_continuous(labels = scales::percent) +
   scale_fill_viridis(option="turbo",discrete = TRUE,name="") +
   theme_bw() +
   theme(
-    axis.title.x = element_text(size=10),
+    axis.title.x = element_text(size=9),
     axis.text.x=element_text(size=8),
-    axis.text.y=element_text(size=5),
+    axis.text.y=element_text(size=8),
     strip.background = element_rect(fill="grey90"),
     legend.position = "none"
   ) +
   facet_wrap(
-    ncol=1,
+    ncol=3,
     ~nutrient_name)
 
 region_select_nutrients_plot
@@ -194,7 +194,7 @@ region_select_nutrients_plot
 ggsave(
   region_select_nutrients_plot,
   filename=here("outputs","plots","fig_1_geographic_nutrient_production.pdf"),
-  units="in",width=6,height=5
+  units="in",width=8.5,height=4
 )
 
 region_all_nutrients_plot <- region_production_nutrients %>%
@@ -228,14 +228,14 @@ region_all_nutrients_plot <- region_production_nutrients %>%
     )
   ) +
   geom_vline(xintercept=0.1,color="black") +
-  xlab("proportion of total nutrient production in each region met by blue food sector") +
+  xlab("proportion of total nutrient production in each region by the aquatic food sector") +
   ylab("") +
   geom_bar(stat="identity") +
   scale_x_continuous(labels = scales::percent) +
   scale_fill_viridis(option="turbo",discrete = TRUE,name="") +
   theme_bw() +
   theme(
-    axis.title.x = element_text(size=10),
+    axis.title.x = element_text(size=9),
     axis.text.x=element_text(size=8),
     axis.text.y=element_text(size=8),
     strip.background = element_rect(fill="grey90"),
@@ -249,7 +249,7 @@ region_all_nutrients_plot
 
 ggsave(
   region_all_nutrients_plot,
-  filename=here("outputs","plots","fig_1_all_geographic_nutrient_production.pdf"),
+  filename=here("outputs","plots","fig_a1_all_geographic_nutrient_production.pdf"),
   units="in",width=8.5,height=11
 )
 
