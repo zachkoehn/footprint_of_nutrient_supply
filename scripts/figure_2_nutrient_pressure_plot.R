@@ -40,6 +40,10 @@ fig_2_nutrient_calorie_panel_data <- country_pressure_data %>%
   ungroup()
 
 fig_2_nutrient_calorie_panel <- fig_2_nutrient_calorie_panel_data %>%
+  mutate(
+    metric=ifelse(metric=="Calories","a)",metric),
+    metric=ifelse(metric=="Nutrient richness","b)",metric)
+  ) %>%
   ggplot(
     aes(x=value,y=pressure_per_tonne_median)
     ) + 
@@ -74,7 +78,8 @@ fig_2_nutrient_calorie_panel <- fig_2_nutrient_calorie_panel_data %>%
   theme_bw() +
   theme(
     legend.position = "top",
-    strip.background = element_rect(fill="grey90"),
+    strip.background = element_rect(fill="white",color="white"),
+    strip.text = element_text(size=10,hjust=0),
     legend.title = element_blank()
   ) +
   facet_wrap(~metric,nrow=2)
